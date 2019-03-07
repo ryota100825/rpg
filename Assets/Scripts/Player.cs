@@ -42,7 +42,7 @@ public class Player : MonoBehaviour
             //Time.timeScale = 0;
         }
         if(colider.gameObject.tag == "Item"){
-            Destroy(colider.gameObject);
+            Destroy(gameObject);
         }
         
     }
