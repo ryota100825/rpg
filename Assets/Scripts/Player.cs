@@ -1,12 +1,21 @@
 ﻿// Player.cs
 using UnityEngine;
+using System.Collections;
+using UnityEngine.UI;
 
 // プレイヤー
 public class Player : MonoBehaviour
 {
-    
+
     [SerializeField] private Vector3 velocity;// 移動方向
     [SerializeField] private float moveSpeed = 5.0f;// 移動速度
+    public int PlayerHP = 100;
+    public Text ScoreText;
+
+    void Start()
+    {
+        ScoreText.text = "HP : 100";
+    }
 
     void Update()
     {
@@ -20,7 +29,7 @@ public class Player : MonoBehaviour
             velocity.z -= 1;
         if (Input.GetKey(KeyCode.D))
             velocity.x += 1;
-    
+
         // 速度ベクトルの長さを1秒でmoveSpeedだけ進むように調整します
         velocity = velocity.normalized * moveSpeed * Time.deltaTime;
 
@@ -34,18 +43,32 @@ public class Player : MonoBehaviour
             // 移動方向ベクトル(velocity)を足し込みます
             transform.position += velocity;
         }
+
+        ScoreText.text = "HP : " + PlayerHP.ToString();
     }
 
     void OnTriggerEnter(Collider colider)//当たり判定
     {
-        if(colider.gameObject.tag == "Enemy"){
-            //Time.timeScale = 0;
+        if (colider.gameObject.tag == "Enemy") {
+            StartCoroutine("Damage", 5);
+            
         }
-        if(colider.gameObject.tag == "Item"){
+        if (colider.gameObject.tag == "Item") {
             Destroy(gameObject);
         }
-        
     }
 
+    private IEnumerable Damage(int hp)
+    {
+        Debug.Log(PlayerHP);
+        gameObject.layer = LayerMask.NameToLayer("PlayerDamage");
+        PlayerHP = PlayerHP - hp;
+        if (PlayerHP <= 0)
+        {
+            Debug.Log("You Die");
+        }
+        yield return new WaitForSeconds(0.5f);
+        gameObject.layer = LayerMask.NameToLayer("Player");
+    }
 
 }
