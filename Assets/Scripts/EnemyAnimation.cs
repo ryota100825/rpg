@@ -21,7 +21,7 @@ public class EnemyAnimation : MonoBehaviour
 
     void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.tag == "Player")
+        if (col.gameObject.tag == "Fire")
         {
             this.animator.SetBool(key_IsDamage, true);
         }else{

@@ -11,6 +11,16 @@ public class Player : MonoBehaviour
     [SerializeField] private float moveSpeed = 5.0f;// 移動速度
     public int PlayerHP = 100;
     public Text ScoreText;
+    private bool isInvinsible = false;
+    GameObject UnityChan;
+    [SerializeField]
+    private float interval = 0.2f;
+
+    private void Awake()
+    {
+        UnityChan = transform.GetChild(0).gameObject;
+
+    }
 
     void Start()
     {
@@ -49,26 +59,39 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter(Collider colider)//当たり判定
     {
-        if (colider.gameObject.tag == "Enemy") {
-            StartCoroutine("Damage", 5);
-            
+        if (colider.gameObject.tag == "Enemy")
+        {
+            if (!isInvinsible)
+            {
+                StartCoroutine(DamageCoroutine());
+            }
         }
-        if (colider.gameObject.tag == "Item") {
+        if (colider.gameObject.tag == "Item")
+        {
             Destroy(gameObject);
         }
     }
 
-    private IEnumerable Damage(int hp)
+    IEnumerator DamageCoroutine()
     {
-        Debug.Log(PlayerHP);
-        gameObject.layer = LayerMask.NameToLayer("PlayerDamage");
-        PlayerHP = PlayerHP - hp;
-        if (PlayerHP <= 0)
-        {
-            Debug.Log("You Die");
-        }
-        yield return new WaitForSeconds(0.5f);
-        gameObject.layer = LayerMask.NameToLayer("Player");
+        isInvinsible = true;
+        Debug.Log("apply damage");
+        PlayerHP = PlayerHP - 5;
+        StartCoroutine(BlinkCoroutine(interval));
+        yield return new WaitForSeconds(3f);
+        Debug.Log("end invinsible");
+        isInvinsible = false;
     }
 
+    IEnumerator BlinkCoroutine(float waitSecond)
+    {
+        while (isInvinsible)
+        {
+            UnityChan.SetActive(!UnityChan.activeSelf);
+
+            yield return new WaitForSeconds(waitSecond);
+        }
+        UnityChan.SetActive(true); // 消えてしまわないように強制でtrueにする
+        yield break;
+    }
 }
