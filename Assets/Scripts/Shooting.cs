@@ -20,7 +20,7 @@ public class Shooting : MonoBehaviour {
             posbullet = this.gameObject.transform.forward * speed;
             bullets.GetComponent<Rigidbody>().AddForce(posbullet);
             bullets.transform.position = startbullet.position;
-            Destroy(bullets, 5.0f);
+            Destroy(bullets, 1.5f);
         }
 	}
 }
