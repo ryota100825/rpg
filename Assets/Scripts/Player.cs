@@ -2,19 +2,22 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
-// プレイヤー
+    // プレイヤー
 public class Player : MonoBehaviour
 {
 
     [SerializeField] private Vector3 velocity;// 移動方向
     [SerializeField] private float moveSpeed = 5.0f;// 移動速度
-    public int PlayerHP = 100;
+    public int PlayerHP = 10;
     public Text ScoreText;
     private bool isInvinsible = false;
     GameObject UnityChan;
     [SerializeField]
-    private float interval = 0.2f;
+    private float interval = 0.1f;
+    public AudioClip se;
+    private AudioSource SeAudio;
 
     private void Awake()
     {
@@ -24,7 +27,8 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        ScoreText.text = "HP : 100";
+        ScoreText.text = "HP : 10";
+        SeAudio = gameObject.GetComponent<AudioSource>();
     }
 
     void Update()
@@ -55,6 +59,10 @@ public class Player : MonoBehaviour
         }
 
         ScoreText.text = "HP : " + PlayerHP.ToString();
+        if(PlayerHP <= 0)
+        {
+            SceneManager.LoadScene("GameOver");
+        }
     }
 
     void OnTriggerEnter(Collider colider)//当たり判定
@@ -66,20 +74,30 @@ public class Player : MonoBehaviour
                 StartCoroutine(DamageCoroutine());
             }
         }
-        if (colider.gameObject.tag == "Item")
+        if (colider.gameObject.tag == "Boss")
         {
-            Destroy(gameObject);
+            if (!isInvinsible)
+            {
+                StartCoroutine(DamageCoroutine());
+            }
+        }
+
+        if (colider.gameObject.tag == "Fire2")
+        {
+            if (!isInvinsible)
+            {
+                StartCoroutine(DamageCoroutine());
+            }
         }
     }
 
     IEnumerator DamageCoroutine()
     {
         isInvinsible = true;
-        Debug.Log("apply damage");
-        PlayerHP = PlayerHP - 5;
+        PlayerHP--;
+        SeAudio.PlayOneShot(se);
         StartCoroutine(BlinkCoroutine(interval));
-        yield return new WaitForSeconds(3f);
-        Debug.Log("end invinsible");
+        yield return new WaitForSeconds(1.5f);
         isInvinsible = false;
     }
 

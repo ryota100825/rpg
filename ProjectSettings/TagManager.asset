@@ -9,6 +9,7 @@ TagManager:
   - FieldObject
   - Fire
   - Boss
+  - Fire2
   layers:
   - Default
   - TransparentFX
